@@ -1,15 +1,16 @@
-import { Module } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service';
 import { AuthenticationController } from './authentication.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from './repository/user.repository';
+import { AuthenticationService } from './authentication.service';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
+import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './Entities/user.Entity';
+import { UserRepository } from './repository/user.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([User, UserRepository]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
