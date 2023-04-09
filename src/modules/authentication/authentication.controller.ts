@@ -1,34 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
+import { LoginAuthenticationDto } from './dto/login-authentication.dto';
+import { Request, Response } from 'express';
+import { User } from './Entities/user.Entity';
+import { ApplyUser } from './guard/current-user.guard';
+import { CurrentUser } from './decorator/user.decorator';
 
-@Controller('authentication')
+@Controller('auth')
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
-  @Post()
-  create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.create(createAuthenticationDto);
+  @Post('login')
+  async loginUser(@Body() loginDto: any, @Res() res: Response) {
+    const user = await this.authenticationService.login(
+      loginDto as LoginAuthenticationDto
+    );
+
+    res.cookie('IsAuthenticated', true, { maxAge: 2 * 60 * 60 * 1000 });
+    res.cookie('Authentication', user.token, {
+      httpOnly: true,
+      maxAge: 2 * 60 * 60 * 1000,
+    }); // max age 2 hours
+
+    return res.status(200).send({ success: true });
   }
 
-  @Get()
-  findAll() {
-    return this.authenticationService.findAll();
+  @Post('register')
+  async registerUser(
+    @Body() body: CreateAuthenticationDto,
+    @Res() res: Response
+  ) {
+    const user = await this.authenticationService.register(body);
+    res.cookie('IsAuthenticated', true, { maxAge: 2 * 60 * 60 * 1000 });
+    res.cookie('Authentication', user.token, {
+      httpOnly: true,
+      maxAge: 2 * 60 * 60 * 1000,
+    }); // max age 2 hours
+    return res.status(200).send({ success: true });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authenticationService.findOne(+id);
+  @Post('logout')
+  logout(@Req() req: Request, @Res() res: Response) {
+    res.clearCookie('IsAuthenticated');
+    res.clearCookie('Authentication');
+    return res.status(200).send({ success: true });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthenticationDto: UpdateAuthenticationDto) {
-    return this.authenticationService.update(+id, updateAuthenticationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authenticationService.remove(+id);
+  @Get('authstatus')
+  @UseGuards(ApplyUser)
+  authStatus(@CurrentUser() user: User) {
+    return { status: !!user, user };
   }
 }
