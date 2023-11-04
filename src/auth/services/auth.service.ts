@@ -79,6 +79,7 @@ export class AuthService {
       throw new InternalServerErrorException(Errors.UNABLE_TO_CREATE);
     }
   }
+
   public async login(loginUserRequest: LoginRequest): Promise<AuthoriseUserResponse> {
     try {
       const user = await this.userRepo.findByEmail(loginUserRequest.email);
@@ -88,7 +89,6 @@ export class AuthService {
       }
       const builder = user.toBuilder().setUserName('amal123@gmail.com').build();
 
-      // await this.userRepo.create(user)
       console.log(user);
       console.log(builder);
       const isPasswordVerified = await verifyHashedPassword(loginUserRequest.password, user.password);
@@ -143,6 +143,7 @@ export class AuthService {
       throw new UnauthorizedException(Errors.UN_AUTHORISED);
     }
   }
+
   async generateToken(userId: string, emailId: string, sessionId: string): Promise<string> {
     return await this.jwt.signAsync(
       {
@@ -156,6 +157,7 @@ export class AuthService {
       },
     );
   }
+
   async generateRefreshToken(userId: string, sessionId: string): Promise<string> {
     const refreshToken = await this.jwt.signAsync({ userId, sessionId }, { secret: this.JWT_REFRESH_TOKEN_SECRET, expiresIn: '7d' });
     return refreshToken;
@@ -175,29 +177,4 @@ export class AuthService {
       console.log('Error: ', error);
     }
   }
-
-  // async _getUserRoles(getUserRoleFromTokenRequest: VerifyAuthResponse): Promise<UserRoles> {
-  //   try {
-  //     const user = await this.userRepo.findById(new Types.ObjectId(getUserRoleFromTokenRequest.userId));
-  //     return user.role.roleType;
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // }
-
-  // async getUsersByRole(getUsersByRole: GetUserByRoleRequest): Promise<GetUsersByRoleResponse> {
-  //   const users = await this.userRepo.findUsersByRoleID(role._id);
-
-  //   return GetUsersByRoleResponse.of(
-  //     users.map((user) => ({
-  //       _id: user._id.toString(),
-  //       dateOfBirth: Profile.dateOfBirth,
-  //       subscription: Profile.subscription,
-  //       profilePicture: Profile.profilePicture,
-  //       phoneNumber: Profile.phoneNumber,
-  //       createdAt: user.createdAt,
-  //       updatedAt: user.updatedAt,
-  //     })),
-  //   );
-  // }
 }

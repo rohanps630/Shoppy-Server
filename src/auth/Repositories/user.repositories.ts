@@ -34,13 +34,11 @@ export class UserRepository extends EntityRepository<UserDocument> {
         return null;
       }
 
-      return await this.entityModel
-        .find({
-          _id: {
-            $in: id,
-          },
-        })
-        .populate('role');
+      return await this.entityModel.find({
+        _id: {
+          $in: id,
+        },
+      });
     } catch (error) {
       if (error instanceof Error) {
         Logger.error(`Error from userRepo.findById():${error.message}`, 'USER-REPOSITORY');
@@ -51,6 +49,7 @@ export class UserRepository extends EntityRepository<UserDocument> {
       return null;
     }
   }
+
   async findByEmail(emailId: string): Promise<UserDocument> {
     try {
       if (!emailId) {
@@ -70,13 +69,14 @@ export class UserRepository extends EntityRepository<UserDocument> {
       return null;
     }
   }
+
   async findByUserName(userName: string): Promise<UserDocument> {
     try {
       if (!userName) {
         return null;
       }
       return await this.entityModel.findOne({
-        user_name: userName,
+        userName: userName,
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -108,25 +108,6 @@ export class UserRepository extends EntityRepository<UserDocument> {
         Logger.error(`Error from userRepo.remove():${error.message}`, 'USER-REPOSITORY');
       } else {
         Logger.error(`Error from userRepo.remove():${error}`, 'USER-REPOSITORY');
-      }
-
-      return null;
-    }
-  }
-
-  async findUsersByRoleID(roleId: string): Promise<UserEntity[]> {
-    try {
-      if (!roleId) {
-        return null;
-      }
-      return await this.entityModel.find({
-        role: roleId,
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        Logger.error(`Error from userRepo.findByRoleID():${error.message}`, 'USER-REPOSITORY');
-      } else {
-        Logger.error(`Error from userRepo.findByRoleID():${error}`, 'USER-REPOSITORY');
       }
 
       return null;

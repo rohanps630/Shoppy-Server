@@ -21,16 +21,6 @@ export abstract class EntityRepository<T extends Document> {
   }
 
   /**
-   * Retrieve an array of documents based on the provided query.
-   *
-   * @param entityFilterQuery - The filter query to match multiple documents.
-   * @returns An array of matching documents or an empty array if none found.
-   */
-  async find(entityFilterQuery: FilterQuery<T>): Promise<T[] | null> {
-    return this.entityModel.find(entityFilterQuery);
-  }
-
-  /**
    * Find and return documents with pagination and optional sorting.
    *
    * @param entityFilterQuery - The filter query to match documents.
@@ -100,7 +90,7 @@ export abstract class EntityRepository<T extends Document> {
    * @returns An object with the matching documents and their count.
    */
   async findAndCount(entityFilterQuery: FilterQuery<T>): Promise<{ entities: T[] | null; count: number }> {
-    const entities = await this.find(entityFilterQuery);
+    const entities = await this.entityModel.find(entityFilterQuery);
     const count = await this.count(entityFilterQuery);
     return { entities, count };
   }

@@ -2,7 +2,6 @@ import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { hashPassword } from '@common/utils/hash-password';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { EntityNames } from '@/database/entity-names';
 
 export type UserDocument = UserEntity & Document;
 @Schema({ collection: 'users' })
