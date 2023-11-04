@@ -5,8 +5,8 @@ import { AuthInfo, BaseRequest } from '@/common/base.request';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { UserRoles } from '@/common/enums/user-role.enums';
 import { AuthGuard } from '@/common/guards/guards';
-import { AuthoriseUserResponse, FindUsersResponse, GetRoleRequest, UpdateRoleRequest } from './dto/create-user-request.dto';
-import { UserService } from './users.service';
+import { AuthoriseUserResponse, FindUsersResponse, GetRoleRequest, UpdateRoleRequest } from '../dto/create-user-request.dto';
+import { UserService } from '../services/users.service';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('users')

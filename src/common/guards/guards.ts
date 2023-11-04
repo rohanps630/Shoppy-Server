@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '@/auth/auth.service';
+import { AuthService } from '@/auth/services/auth.service';
 import { VerifyAuthRequest } from '../../auth/dto/verify-auth.dto';
 import { AuthInfo } from '../base.request';
 

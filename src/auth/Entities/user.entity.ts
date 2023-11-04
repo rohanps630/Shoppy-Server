@@ -7,51 +7,56 @@ import { EntityNames } from '@/database/entity-names';
 export type UserDocument = UserEntity & Document;
 @Schema({ collection: 'users' })
 export class UserEntity {
-  // @ObjectIdColumn({ name: '_id' })
   @Prop({
-    type: Types.ObjectId, // Specify the type as ObjectId
-    default: new Types.ObjectId(), // Generate a new ObjectId by default
+    type: Types.ObjectId,
+    default: new Types.ObjectId(),
   })
   public _id: Types.ObjectId;
 
-  // @Column({ name: 'user_name' })
-  @Prop({ name: 'user_name' })
-  public user_name: string;
+  @IsEmail()
+  @IsNotEmpty()
+  @Prop({ required: true, type: String })
+  email: string;
 
-  // @Column({ name: 'first_name' })
-  @Prop({ name: 'first_name' })
-  public first_name: string;
+  @IsNotEmpty()
+  @Prop({ required: true, type: String })
+  userName: string;
 
-  // @Column({ name: 'last_name' })
-  @Prop({ name: 'last_name' })
-  public last_name: string;
+  @IsNotEmpty()
+  @MinLength(8)
+  @Prop({ required: true, type: String })
+  password: string;
 
-  // @Column({ name: 'email', nullable: false })
-  @IsEmail({}, { message: 'Invalid email format' })
-  @IsNotEmpty({ message: 'Email is required' })
-  @Prop({ name: 'email' })
-  public email: string;
+  @Prop({ required: true, type: String })
+  name: {
+    firstName: string;
+    lastName: string;
+  };
 
-  // @Column({ name: 'password', nullable: false })
-  @IsNotEmpty({ message: 'Password is required' })
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  @Prop({ name: 'password' })
-  public password: string;
+  @Prop({
+    type: {
+      city: String,
+      street: String,
+      number: Number,
+      zipcode: String,
+    },
+  })
+  address: {
+    city: string;
+    street: string;
+    number: number;
+    zipcode: string;
+  };
 
-  // @ManyToOne(() => UserRoleEntity)
-  // @Column({ name: 'role' })
-  // @Prop({ type: Types.ObjectId, ref: EntityNames.USER_ROLE, name: 'role' }) // Define the reference to UserStateEntity
-  // public role: UserRoleEntity;
+  @Prop({ type: String })
+  phone: string;
 
-  // @CreateDateColumn({ name: 'created_at', nullable: false, update: false })
-  @Prop({ type: Date, default: Date.now, select: false, name: 'createdAt' }) // Define createdAt field and exclude it from updates
+  @Prop({ type: Date, default: Date.now, select: false, name: 'createdAt' })
   public createdAt: Date;
 
-  // @UpdateDateColumn({ name: 'updated_at', nullable: false })
-  @Prop({ type: Date, default: Date.now, name: 'updatedAt' }) // Define updatedAt field
+  @Prop({ type: Date, default: Date.now, name: 'updatedAt' })
   public updatedAt: Date;
 
-  // @VersionColumn({ name: 'version', nullable: false, default: 0 })
   @Prop({ type: 'number', name: 'version' })
   public version = 0;
 
@@ -63,12 +68,12 @@ export class UserEntity {
     const builder = UserEntity.builder();
 
     builder._id = this._id;
-    builder.userName = this.user_name;
     builder.email = this.email;
-    builder.firstName = this.first_name;
-    builder.lastName = this.last_name;
+    builder.userName = this.userName;
+    builder.name = this.name;
+    builder.phone = this.phone;
     builder.password = this.password;
-    // builder.role = this.role;
+    builder.address = this.address;
     builder.createdAt = this.createdAt;
     builder.updatedAt = this.updatedAt;
     builder.version = this.version;
@@ -78,44 +83,54 @@ export class UserEntity {
 
   public static Builder = class {
     _id: Types.ObjectId;
-    userName: string;
-    firstName: string;
-    lastName: string;
     email: string;
+    userName: string;
     password: string;
-    // role: UserRoleEntity;
+    name: {
+      firstName: string;
+      lastName: string;
+    };
+    address: {
+      city: string;
+      street: string;
+      number: number;
+      zipcode: string;
+    };
+    phone: string;
     createdAt: Date;
     updatedAt: Date;
     version = 0;
 
-    profileImage: string;
-
-    public setUserName(value: string) {
-      this.userName = value;
+    public setEmail(email: string) {
+      this.email = email;
       return this;
     }
 
-    public setEmail(value: string) {
-      this.email = value;
+    public setUserName(userName: string) {
+      this.userName = userName;
       return this;
     }
+
     public setPassword(value: string) {
       const hashedPassword = hashPassword(value);
       this.password = hashedPassword;
       return this;
     }
-    public setFirstName(value: string) {
-      this.firstName = value;
+
+    public setName(name: typeof this.name) {
+      this.name = name;
       return this;
     }
-    public setLastName(value: string) {
-      this.lastName = value;
+
+    public setAddress(address: typeof this.address) {
+      this.address = address;
       return this;
     }
-    // public setUserRoles(value: UserRoleEntity) {
-    //   this.role = value;
-    //   return this;
-    // }
+
+    public setPhone(phone: string) {
+      this.phone = phone;
+      return this;
+    }
 
     public build(includeId = true): UserEntity {
       const e = new UserEntity();
@@ -130,12 +145,12 @@ export class UserEntity {
       }
 
       e._id = this._id;
-      e.user_name = this.userName;
-      e.first_name = this.firstName;
-      e.last_name = this.lastName;
+      e.userName = this.userName;
+      e.name = this.name;
       e.email = this.email;
       e.password = this.password;
-      // e.role = this.role;
+      e.address = this.address;
+      e.phone = this.phone;
       e.createdAt = this.createdAt;
       e.updatedAt = this.updatedAt;
       e.version = e.version + 1;
@@ -144,5 +159,4 @@ export class UserEntity {
     }
   };
 }
-export const UserSchema = SchemaFactory.createForClass(UserEntity);
-UserSchema.loadClass(UserEntity);
+export const UserSchema = SchemaFactory.createForClass(UserEntity).loadClass(UserEntity);

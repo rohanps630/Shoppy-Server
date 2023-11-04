@@ -1,18 +1,18 @@
 import { BadGatewayException, BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { VerifiedTokenPayload, VerifyAuthRequest, VerifyAuthRequestDto, VerifyAuthResponse } from './dto/verify-auth.dto';
+import { VerifiedTokenPayload, VerifyAuthRequest, VerifyAuthRequestDto, VerifyAuthResponse } from '../dto/verify-auth.dto';
 import { HttpService } from '@nestjs/axios';
-import { AuthoriseUserResponse, LoginRequest, RegisterUserRequest } from './dto/create-user-request.dto';
+import { AuthoriseUserResponse, LoginRequest, RegisterUserRequest } from '../dto/create-user-request.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from './Entities/user.entity';
+import { UserEntity } from '../Entities/user.entity';
 import { verifyHashedPassword } from '@common/utils/hash-password';
 import { Errors } from '@common/Error.messages';
 import { LoggerService } from '@common/logger/logger.service';
 import { UserRoles } from '@/common/enums/user-role.enums';
 import { MicroserviceEnvKeys } from '@/microserviceFactory.factory';
 import { UniqueIdGenetrator } from '@/common/utils/unique-id.generator';
-import { GetUserByRoleRequest, GetUsersByRoleResponse } from './dto/get-users-request.dto';
-import { UserRepository } from './Repositories/user.repositories';
+import { GetUserByRoleRequest, GetUsersByRoleResponse } from '../dto/get-users-request.dto';
+import { UserRepository } from '../repositories/user.repositories';
 import { Types } from 'mongoose';
 
 @Injectable()
@@ -52,9 +52,10 @@ export class AuthService {
         .setEmail(registerUserRequest.email)
         .setPassword(registerUserRequest.password)
         .setUserName(registerUserRequest.user_name)
-        .setFirstName(registerUserRequest.first_name)
-        .setLastName(registerUserRequest.last_name)
-
+        .setName({
+          firstName: registerUserRequest.first_name,
+          lastName: registerUserRequest.last_name,
+        })
         .build();
       //save user
       this.loggerService.log('AUTH-SERVICE.register()', `${user.email} successfully created the account!`);

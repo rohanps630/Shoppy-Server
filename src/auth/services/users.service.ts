@@ -3,9 +3,9 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from './Repositories/user.repositories';
+import { UserRepository } from '../repositories/user.repositories';
 import { BaseRequest } from '@/common/base.request';
-import { FindUsersResponse } from './dto/create-user-request.dto';
+import { FindUsersResponse } from '../dto/create-user-request.dto';
 
 @Injectable()
 export class UserService {
@@ -26,7 +26,15 @@ export class UserService {
 
       const resonse = Promise.all(
         users.map((user) =>
-          FindUsersResponse.of(user._id, user.user_name, user.first_name, user.last_name, user.email, user.createdAt, user.updatedAt),
+          FindUsersResponse.of(
+            user._id,
+            user.userName,
+            user.name.firstName,
+            user.name.lastName,
+            user.email,
+            user.createdAt,
+            user.updatedAt,
+          ),
         ),
       );
     } catch (error) {}

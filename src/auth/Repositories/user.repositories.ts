@@ -6,11 +6,6 @@ import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UserRepository extends EntityRepository<UserDocument> {
-  // private repository: MongoRepository<UserEntity>;
-  // constructor(private dataSource: DataSource) {
-  //   this.repository = this.dataSource.getMongoRepository(UserEntity);
-  // }
-
   constructor(@InjectModel(UserEntity.name) userEntity: Model<UserDocument>) {
     super(userEntity);
   }

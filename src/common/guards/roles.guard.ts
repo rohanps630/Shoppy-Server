@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { UserRoles } from '../enums/user-role.enums';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { VerifyAuthRequest } from '@/auth/dto/verify-auth.dto';
-import { AuthService } from '@/auth/auth.service';
+import { AuthService } from '@/auth/services/auth.service';
 import { AuthInfo } from '../base.request';
 
 @Injectable()

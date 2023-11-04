@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { LoggerService } from '@common/logger/logger.service';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { HttpModule } from '@nestjs/axios';
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { UserRepository } from './Repositories/user.repositories';
+import { UserRepository } from './repositories/user.repositories';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserController } from './users.controller';
-import { UserService } from './users.service';
+import { UserController } from './controllers/users.controller';
+import { UserService } from './services/users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthServiceSchemas } from './Entities/schemas.register';
 
